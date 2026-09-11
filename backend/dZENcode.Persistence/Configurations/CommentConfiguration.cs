@@ -57,7 +57,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .HasOne(x => x.Parent)
             .WithMany(y => y.Replies)
             .HasForeignKey(x => x.ParentCommentId)
-            .OnDelete(DeleteBehavior.SetNull)
+            .OnDelete(DeleteBehavior.Restrict)
             .IsRequired(false);
     }
 }
