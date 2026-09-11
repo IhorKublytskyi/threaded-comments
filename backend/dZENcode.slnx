@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="dZENcode.API/dZENcode.API.csproj" />
+  <Project Path="dZENcode.Application/dZENcode.Application.csproj" />
+  <Project Path="dZENcode.Core/dZENcode.Core.csproj" />
+  <Project Path="dZENcode.Persistence/dZENcode.Persistence.csproj" />
+</Solution>
