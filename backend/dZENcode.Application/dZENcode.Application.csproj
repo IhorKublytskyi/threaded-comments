@@ -10,4 +10,16 @@
     <ProjectReference Include="..\dZENcode.Core\dZENcode.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Comments\Commands\" />
+    <Folder Include="Features\Comments\Queries\" />
+    <Folder Include="Features\Comments\Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="8.3.0" />
+    <PackageReference Include="SkiaSharp" Version="4.152.0" />
+    <PackageReference Include="StackExchange.Redis" Version="3.2.0" />
+  </ItemGroup>
+
 </Project>
