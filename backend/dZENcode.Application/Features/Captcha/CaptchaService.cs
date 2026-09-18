@@ -50,7 +50,7 @@ public class CaptchaService : ICaptchaService
             DateTimeOffset.UtcNow.AddMinutes(_captchaOptions.TTLMinutes));
     }
 
-    public async ValueTask<bool> ValidateAsync(string token, string? input, CancellationToken cancellationToken = default)
+    public async ValueTask<bool> ValidateAsync(string? token, string? input, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -67,6 +67,8 @@ public class CaptchaService : ICaptchaService
         }
 
         byte[] hashedInput = ComputeHash(input);
+
+        Console.WriteLine();
 
         return CryptographicOperations.FixedTimeEquals(hashedAnswer, hashedInput);
     }

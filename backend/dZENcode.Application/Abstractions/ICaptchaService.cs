@@ -6,5 +6,5 @@ public interface ICaptchaService
 {
     ValueTask<CaptchaResponse> GenerateAsync(CancellationToken cancellationToken = default);
 
-    ValueTask<bool> ValidateAsync(string token, string input, CancellationToken cancellationToken = default);
+    ValueTask<bool> ValidateAsync(string? token, string input, CancellationToken cancellationToken = default);
 }
