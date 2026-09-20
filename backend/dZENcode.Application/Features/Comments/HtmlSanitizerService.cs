@@ -9,6 +9,7 @@ public sealed class HtmlSanitizerService : IHtmlSanitizerService
 	{
 		AllowedTags = new HashSet<string> { "a", "code", "i", "strong" },
 		AllowedAttributes = new HashSet<string> { "href", "title" },
+		AllowedSchemes = new HashSet<string> { "http", "https" }
 	});
 
 	public string Sanitize(string html) => _sanitizer.Sanitize(html);

@@ -68,8 +68,6 @@ public class CaptchaService : ICaptchaService
 
         byte[] hashedInput = ComputeHash(input);
 
-        Console.WriteLine();
-
         return CryptographicOperations.FixedTimeEquals(hashedAnswer, hashedInput);
     }
 

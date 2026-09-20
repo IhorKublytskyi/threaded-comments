@@ -1,4 +1,5 @@
 ﻿using dZENcode.Application.Abstractions;
+using dZENcode.Application.Abstractions.Exceptions;
 using SkiaSharp;
 
 namespace dZENcode.Application.Features.Comments;
@@ -12,8 +13,11 @@ public class ImageProcessor : IFileProcessor
 
 	public byte[] Process(ReadOnlyMemory<byte> source)
 	{
-		ArgumentNullException.ThrowIfNull(source);
-
+		if (source is {Length: 0})
+		{
+			throw new BadRequestException("Empty source");
+		}
+		
 		using MemoryStream input = new();
 		input.Write(source.Span);
 
@@ -22,17 +26,15 @@ public class ImageProcessor : IFileProcessor
 		input.Position = 0;
 
 		using SKCodec codec = SKCodec.Create(input)
-			?? throw new ArgumentException(
-				"Invalid or unsupported image.",
-				nameof(source));
+			?? throw new BadRequestException(
+				"Invalid or unsupported image");
 
 		SKEncodedImageFormat format = codec.EncodedFormat;
 
 		if (IsSupportedFormat(format) is false)
 		{
-			throw new ArgumentException(
-				"Only JPG, PNG and GIF images are supported.",
-				nameof(source));
+			throw new BadRequestException(
+				"Only JPG, PNG and GIF images are supported");
 		}
 
 		int originalWidth = codec.Info.Width;
@@ -42,9 +44,8 @@ public class ImageProcessor : IFileProcessor
 
 		if (sourcePixels > MaxSourcePixels)
 		{
-			throw new ArgumentException(
-				"Image dimensions are too large.",
-				nameof(source));
+			throw new BadRequestException(
+				"Image dimensions are too large");
 		}
 
 		if (originalWidth <= MaxWidth &&
@@ -90,7 +91,7 @@ public class ImageProcessor : IFileProcessor
 		return encoded.ToArray();
 	}
 
-	private bool IsSupportedFormat(SKEncodedImageFormat format)
+	private static bool IsSupportedFormat(SKEncodedImageFormat format)
 	{
 		return format is
 			SKEncodedImageFormat.Jpeg or

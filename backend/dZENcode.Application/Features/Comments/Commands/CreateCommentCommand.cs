@@ -1,4 +1,5 @@
 using dZENcode.Application.Abstractions;
+using dZENcode.Application.Abstractions.Exceptions;
 using dZENcode.Application.Features.Captcha.DTOs;
 using dZENcode.Application.Features.Comments.DTOs;
 using dZENcode.Core.Entities;
@@ -52,11 +53,11 @@ internal sealed class CreateCommentCommandHandler : ICommandHandler<CreateCommen
 
         if (isValidCaptchaAnswer is false)
         {
-            throw new ArgumentException($"Captcha answer is not valid.");
+            throw new BadRequestException("Wrong captcha answer");
         }
         
         string sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
-        string? attachmentPath = null;;
+        string? attachmentPath = null;
         
         if (command.ParentCommentId is not null)
         {
@@ -66,7 +67,7 @@ internal sealed class CreateCommentCommandHandler : ICommandHandler<CreateCommen
 
             if (parentExists is false)
             {
-                throw new InvalidOperationException($"Parent comment with ID {command.ParentCommentId} does not exist.");
+                throw new NotFoundException($"Parent comment with ID {command.ParentCommentId} does not exist.");
             }
         }
 
@@ -76,7 +77,7 @@ internal sealed class CreateCommentCommandHandler : ICommandHandler<CreateCommen
             {
                 AttachmentKind.Image => _imageProcessor.Process(command.Attachment.Content),
                 AttachmentKind.Text => command.Attachment.Content,
-                _ => throw new InvalidOperationException("Invalid attachment kind.")
+                _ => throw new BadRequestException($"Invalid attachment kind '{command.Attachment.AttachmentKind}'")
             };
 
             attachmentPath = await _fileStorage.SaveAsync(attachmentBytes, command.Attachment.FileName, command.Username, cancellationToken);

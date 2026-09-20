@@ -1,3 +1,4 @@
+using System.Xml;
 using dZENcode.Application.Features.Comments.Commands;
 using FluentValidation;
 
@@ -21,10 +22,27 @@ public class CreateCommentCommandValidator : AbstractValidator<CreateCommentComm
             .MaximumLength(256).WithMessage("Max homepage url length is 256")
             .Must(url => Uri.TryCreate(url, UriKind.Absolute, out Uri? u) && u.Scheme is "http" or "https")
             .When(x => string.IsNullOrWhiteSpace(x.HomePageUrl) is not true).WithMessage("Invalid link format");
-        
+
         RuleFor(x => x.Body)
             .NotEmpty().WithMessage("Comment can't be empty")
             .MaximumLength(1024).WithMessage("Max comment body length is 1024");
+        
+        When(x => string.IsNullOrWhiteSpace(x.Body) is false, () =>
+        {
+            RuleFor(x => x.Body)
+                .Custom((body, ctx) =>
+                {
+                    try
+                    {
+                        new XmlDocument().LoadXml($"<root>{body}</root>");
+                    }
+                    catch (XmlException ex)
+                    {
+                        ctx.AddFailure(nameof(CreateCommentCommand.Body), 
+                            $"Invalid XHTML: {ex.Message}");
+                    }
+                });
+        });
         
         RuleFor(x => x.CaptchaChallengeAnswer).NotNull().WithMessage("Captcha answer can't be null");
         
