@@ -9,6 +9,7 @@ using dZENcode.Application.Features.Comments.Commands;
 using dZENcode.Application.Features.Comments.DTOs;
 using dZENcode.Application.Features.Comments.Queries;
 using dZENcode.Application.Features.Comments.Validators.CommandsValidators;
+using dZENcode.Application.Features.Comments.Validators.CommandValidators;
 using dZENcode.Application.Features.Comments.Validators.QueryValidators;
 using dZENcode.Application.Features.Dispatcher;
 using dZENcode.Application.Features.Dispatcher.Behaviors;
@@ -103,7 +104,7 @@ app.UseAntiforgery();
 app.UseCors();
 
 app.MapGet("/antiforgery/token",
-	(IAntiforgery antiforgery, HttpContext httpContext) => antiforgery.GetAndStoreTokens(httpContext));
+	(IAntiforgery antiforgery, HttpContext httpContext) => Results.Ok(antiforgery.GetAndStoreTokens(httpContext)));
 
 app.MapGet("/comments", async (
 	[FromQuery] GetCommentsRequest parameters,
@@ -114,7 +115,9 @@ app.MapGet("/comments", async (
 
 	GetCommentsQuery query = new(queryParameters);
 
-	return await dispatcher.SendAsync(query, cancellationToken);
+	PagedResult<CommentDto> response = await dispatcher.SendAsync(query, cancellationToken);
+
+	return Results.Ok(response);
 });
 
 app.MapGet("/comments/{id:int}/replies", async (
@@ -124,7 +127,9 @@ app.MapGet("/comments/{id:int}/replies", async (
 {
 	GetCommentRepliesQuery query = new(id);
 
-	return await dispatcher.SendAsync(query, cancellationToken);
+	List<CommentDto> response = await dispatcher.SendAsync(query, cancellationToken);
+
+	return Results.Ok(response);
 });
 
 // Workaround for the following issue(since IFormFile File is optional) - https://github.com/dotnet/aspnetcore/issues/56234 
@@ -133,27 +138,25 @@ app.MapPost("/comments", async (
 	[FromServices] IInstructionDispatcher dispatcher,
 	CancellationToken cancellationToken = default) =>
 {
-	// if (httpRequest.HasFormContentType is false)
-	//     return "Expected multipart/form-data";
+	if (httpRequest.HasFormContentType is false)
+		return Results.BadRequest("Expected multipart/form-data");
 
 	IFormCollection form = await httpRequest.ReadFormAsync(cancellationToken);
-
 	IFormFile? file = form.Files.GetFile("File");
-
 	CommentAttachment? attachment = null;
 
-	if (file is {Length: > 0})
+	if (file is { Length: > 0 })
 	{
-		int bytesToRead = 0;
-		byte[] buffer = new byte[file.Length];
-		await using Stream stream = file.OpenReadStream();
-
-		while (bytesToRead < file.Length)
+		const long maxFileSizeBytes = 10 * 1024 * 1024;
+		if (file.Length > maxFileSizeBytes)
 		{
-			bytesToRead += await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+			return Results.BadRequest("File size exceeds the 10MB limit.");
 		}
 
-		ReadOnlyMemory<byte> memory = buffer;
+		using MemoryStream memoryStream = new MemoryStream();
+		await file.CopyToAsync(memoryStream, cancellationToken);
+        
+		ReadOnlyMemory<byte> memory = memoryStream.ToArray();
 		attachment = new CommentAttachment(memory, file.FileName);
 	}
 
@@ -168,7 +171,9 @@ app.MapPost("/comments", async (
 		int.TryParse(form["ParentCommentId"], out int pid) ? pid : null,
 		attachment);
 
-	return await dispatcher.SendAsync(command, cancellationToken);
+	int response = await dispatcher.SendAsync(command, cancellationToken);
+
+	return Results.Ok(response);
 });
 
 app.MapGet("/captcha", async (

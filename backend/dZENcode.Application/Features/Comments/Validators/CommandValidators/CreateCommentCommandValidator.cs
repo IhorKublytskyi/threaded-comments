@@ -1,5 +1,6 @@
 using System.Xml;
 using dZENcode.Application.Features.Comments.Commands;
+using dZENcode.Application.Features.Comments.Validators.CommandValidators;
 using FluentValidation;
 
 namespace dZENcode.Application.Features.Comments.Validators.CommandsValidators;
