@@ -1,0 +1,59 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DzenConnectionString=${ConnectionStrings__DzenConnectionString}
+      - ConnectionStrings__RedisConnectionString=${ConnectionStrings__RedisConnectionString}
+      - CaptchaOptions__SecretKey=${CaptchaOptions__SecretKey}
+      - CaptchaOptions__TTLMinutes=${CaptchaOptions__TTLMinutes}
+      - StorageOptions__RootPath=${StorageOptions__RootPath}
+      - Cors__AllowedOrigins__0=${Cors__AllowedOrigins__0}
+      - Cors__AllowedOrigins__1=${Cors__AllowedOrigins__1}
+      - Cors__AllowedOrigins__2=${Cors__AllowedOrigins__2}
+      - Cors__AllowedOrigins__3=${Cors__AllowedOrigins__3}
+    ports:
+      - "5046:8080"
+    volumes:
+      - attachments_data:/app/data
+    depends_on:
+      mssql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL}
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  mssql_data:
+  attachments_data:

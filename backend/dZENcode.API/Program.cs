@@ -204,6 +204,12 @@ app.MapGet("/attachments/{**path}", async (
 		isImage ? null : $"attachment{file.Extension}");
 });
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DzenDbContext>();
+    dbContext.Database.Migrate();
+}
+
 await app.RunAsync();
 
 static string ResolveContentType(string extension)
