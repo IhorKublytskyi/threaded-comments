@@ -467,3 +467,8 @@ $RECYCLE.BIN/
 ### Project-specific ###
 # User-uploaded attachments (runtime data, never commit)
 backend/dZENcode.API/Attachments/
+
+# Env
+.env
+.env.*
+!.env.example

@@ -70,7 +70,7 @@ public class ImageProcessor : IFileProcessor
 
 		using SKBitmap resizedBitmap = bitmap.Resize(
 				new SKImageInfo(width, height),
-				SKSamplingOptions.Default)
+				SKFilterQuality.Medium)
 			?? throw new InvalidOperationException(
 				"Failed to resize the image.");
 
