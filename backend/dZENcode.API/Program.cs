@@ -33,7 +33,7 @@ builder.Services.AddAntiforgery();
 
 // CORS
 
-string[] allowedOrigins = configuration.GetSection("Coes:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173", "http://127.0.0.1:5173"];
+string[] allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? ["http://localhost:5173", "http://127.0.0.1:5173"];
 builder.Services.AddCors(options =>
 {
 	options.AddDefaultPolicy(policy =>
