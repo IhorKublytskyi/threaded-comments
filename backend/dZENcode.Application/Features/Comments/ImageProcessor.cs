@@ -15,7 +15,7 @@ public class ImageProcessor : IFileProcessor
 	{
 		if (source is {Length: 0})
 		{
-			throw new BadRequestException("Empty source");
+			throw new BadRequestException("Empty source.");
 		}
 		
 		using MemoryStream input = new();
@@ -27,14 +27,14 @@ public class ImageProcessor : IFileProcessor
 
 		using SKCodec codec = SKCodec.Create(input)
 			?? throw new BadRequestException(
-				"Invalid or unsupported image");
+				"Invalid or unsupported image.");
 
 		SKEncodedImageFormat format = codec.EncodedFormat;
 
 		if (IsSupportedFormat(format) is false)
 		{
 			throw new BadRequestException(
-				"Only JPG, PNG and GIF images are supported");
+				"Only JPG, PNG and GIF images are supported.");
 		}
 
 		int originalWidth = codec.Info.Width;
@@ -45,7 +45,7 @@ public class ImageProcessor : IFileProcessor
 		if (sourcePixels > MaxSourcePixels)
 		{
 			throw new BadRequestException(
-				"Image dimensions are too large");
+				"Image dimensions are too large.");
 		}
 
 		if (originalWidth <= MaxWidth &&

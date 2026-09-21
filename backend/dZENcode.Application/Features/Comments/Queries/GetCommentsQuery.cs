@@ -39,6 +39,7 @@ public sealed class GetCommentsQueryHandler : IQueryHandler<GetCommentsQuery, Pa
 				Id = x.Id,
 				Username = x.Username,
 				Email = x.Email,
+				HomePageUrl = x.HomePageUrl,
 				Body = x.Body,
 				AttachmentPath = x.AttachmentPath,
 				CreatedAt = x.CreatedAt,

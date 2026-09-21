@@ -7,6 +7,8 @@ public record CommentDto
 	public string? Email { get; init; }
 
 	public string? Username { get; init; }
+	
+	public string? HomePageUrl { get; init; }
 
 	public string? Body { get; init; }
 

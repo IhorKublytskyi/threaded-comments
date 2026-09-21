@@ -23,14 +23,14 @@ public class LocalAttachmentsFileStorage : IFileStorage
     {
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new BadRequestException("Invalid path");
+            throw new BadRequestException("Invalid path.");
         }
 
         string filePath = ResolveSafePath(path);
 
         if (File.Exists(filePath) is false)
         {
-            throw new FileNotFoundException("File not found");
+            throw new FileNotFoundException("File not found.");
         }
 
         byte[] content = await File.ReadAllBytesAsync(filePath, cancellationToken);
