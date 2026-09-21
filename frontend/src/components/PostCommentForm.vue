@@ -243,7 +243,8 @@ async function onFormSubmit() {
   try {
     const fd = new FormData()
 
-    if (props.replyTo?.id) {
+    const replyPrefix = props.replyTo?.username ? `@${props.replyTo.username} ` : ''
+    if (props.replyTo?.id && replyPrefix && form.value.body.startsWith(replyPrefix)) {
       fd.append('ParentCommentId', props.replyTo.id)
     }
 
@@ -269,8 +270,9 @@ async function onFormSubmit() {
     })
 
     if (res.ok) {
-      const parentId = props.replyTo?.id ?? null
-      console.log('Success! Your comment has been saved.')
+      const replyPrefix = props.replyTo?.username ? `@${props.replyTo.username} ` : ''
+      const hasParent = props.replyTo?.id && replyPrefix && form.value.body.startsWith(replyPrefix)
+      const parentId = hasParent ? props.replyTo.id : null
 
       form.value = { email: '', username: '', homePageUrl: '', body: '' }
       file.value = null
@@ -467,7 +469,7 @@ async function onFormSubmit() {
       <section class="modal-card-body">
         <div v-if="loading" class="has-text-centered">Loading...</div>
         <template v-else-if="captcha">
-          <div class="is-flex is-justify-content-center">
+          <div class="is-flex is-justify-content-center has-background-white">
             <img :src="`data:image/png;base64,${captcha.imageBase64}`" alt="captcha" />
           </div>
         </template>

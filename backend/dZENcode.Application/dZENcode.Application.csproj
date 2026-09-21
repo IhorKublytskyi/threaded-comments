@@ -12,6 +12,13 @@
 
   <ItemGroup>
     <Folder Include="Features\Comments\Commands\" />
+    <Folder Include="Fonts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+   <None Update="Fonts\captcha.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

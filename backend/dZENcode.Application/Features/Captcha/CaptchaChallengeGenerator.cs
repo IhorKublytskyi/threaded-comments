@@ -16,7 +16,21 @@ public class CaptchaChallengeGenerator : ICaptchaChallengeGenerator
     private const int BackgroundLinesCount = 50;
 
     // For Linux
-    static readonly SKTypeface Typeface = SKTypeface.Default;
+    static readonly SKTypeface Typeface = LoadFont();
+
+    private static SKTypeface LoadFont()
+    {
+        string fontPath = Path.Combine(AppContext.BaseDirectory, "Fonts", "captcha.ttf");
+
+        SKTypeface typeface = SKTypeface.FromFile(fontPath);
+
+        if(typeface == null)
+        {
+            throw new FileNotFoundException("Captcha font not found");
+        }
+
+        return typeface;
+    }
 
     public CaptchaChallenge Generate()
     {

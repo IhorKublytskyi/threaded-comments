@@ -28,19 +28,19 @@ function goTo(page) {
 <template>
   <div v-if="totalPages > 1" class="mt-4">
     <nav class="pagination is-small" role="navigation" aria-label="pagination">
-      <a
+      <button
         href="#"
         class="pagination-previous"
         :disabled="currentPage === 1"
         @click.prevent="goTo(currentPage - 1)"
-        >Previous</a
+        >Previous</button
       >
-      <a
+      <button
         href="#"
         class="pagination-next"
         :disabled="currentPage === totalPages"
         @click.prevent="goTo(currentPage + 1)"
-        >Next page</a
+        >Next</button
       >
       <ul class="pagination-list">
         <template v-for="(p, i) in pages" :key="p">
