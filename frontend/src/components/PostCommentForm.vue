@@ -1,6 +1,7 @@
 <script setup>
 import { validateFields } from '@/utils/validateForm'
 import { ref, watch } from 'vue'
+import { apiUrl } from '@/utils/api.js'
 
 const props = defineProps({
   replyTo: { type: Object, default: null },
@@ -225,7 +226,7 @@ async function loadCaptcha() {
   captchaAnswer.value = ''
   loading.value = true
   try {
-    const res = await fetch('http://localhost:5046/captcha')
+    const res = await fetch(apiUrl('/captcha'))
     if (res.ok) {
       captcha.value = await res.json()
     }
@@ -262,7 +263,7 @@ async function onFormSubmit() {
       fd.append('File', file.value)
     }
 
-    const res = await fetch('http://localhost:5046/comments', {
+    const res = await fetch(apiUrl('/comments'), {
       method: 'POST',
       body: fd,
     })

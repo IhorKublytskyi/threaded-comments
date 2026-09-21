@@ -5,6 +5,7 @@ import PaginationBar from './components/PaginationBar.vue'
 import PostCommentForm from './components/PostCommentForm.vue'
 import Lightbox from './components/Lightbox.vue'
 import TextModal from './components/TextModal.vue'
+import { apiUrl } from './utils/api.js'
 
 const textFile = ref(null)
 provide('openText', (payload) => {
@@ -70,7 +71,7 @@ function buildGetCommentsUrl(url) {
 }
 
 async function fetchData() {
-  const url = buildGetCommentsUrl('http://localhost:5046/comments')
+  const url = buildGetCommentsUrl(apiUrl('/comments'))
 
   console.log(url)
 
