@@ -53,7 +53,7 @@ internal sealed class CreateCommentCommandHandler : ICommandHandler<CreateCommen
 
         if (isValidCaptchaAnswer is false)
         {
-            throw new BadRequestException("Wrong captcha answer");
+            throw new BadRequestException("Wrong captcha answer.");
         }
         
         string sanitizedBody = _htmlSanitizer.Sanitize(command.Body);
@@ -77,7 +77,7 @@ internal sealed class CreateCommentCommandHandler : ICommandHandler<CreateCommen
             {
                 AttachmentKind.Image => _imageProcessor.Process(command.Attachment.Content),
                 AttachmentKind.Text => command.Attachment.Content,
-                _ => throw new BadRequestException($"Invalid attachment kind '{command.Attachment.AttachmentKind}'")
+                _ => throw new BadRequestException($"Invalid attachment kind '{command.Attachment.AttachmentKind}'.")
             };
 
             attachmentPath = await _fileStorage.SaveAsync(attachmentBytes, command.Attachment.FileName, command.Username, cancellationToken);
