@@ -1,8 +1,8 @@
-const API = 'http://localhost:5046'
+import { apiUrl } from "./api"
 
 export function getAttachmentUrl(path) {
     if (!path) return null
-    return `${API}/attachments/${path.replace(/\\/g, '/')}`
+    return apiUrl(`/attachments/${path.replace(/\\/g, '/')}`)
 }
 
 const IMAGE_EXT = ['jpg', 'jpeg', 'png', 'gif']

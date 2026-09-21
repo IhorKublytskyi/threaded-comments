@@ -2,6 +2,7 @@
 import { inject, watch, computed, ref } from 'vue'
 import { formatDate } from '@/utils/formatDate.js'
 import CommentAttachment from './CommentAttachment.vue'
+import { apiUrl } from '@/utils/api.js'
 
 const props = defineProps({
   comment: { type: Object, required: true },
@@ -25,7 +26,6 @@ const loading = ref(false)
 const expanded = ref(false)
 const error = ref('')
 
-const API = 'http://localhost:5046'
 const hasReplies = computed(() => localReplyCount.value > 0)
 
 async function loadReplies(force = false) {
@@ -37,7 +37,7 @@ async function loadReplies(force = false) {
   loading.value = true
   error.value = ''
   try {
-    const res = await fetch(`${API}/comments/${props.comment.id}/replies`)
+    const res = await fetch(apiUrl(`/comments/${props.comment.id}/replies`))
     if (!res.ok) throw new Error(`Status ${res.status}`)
     const data = await res.json()
     replies.value = Array.isArray(data) ? data : data.items
